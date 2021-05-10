@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { LogInForm } from '../components';
+import { TextField, Button, Box, Grid } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import { useLoginUser } from '../MVVM/ViewModel/UserViewModel';
 
+const CssTextField = withStyles({
+	root: {
+		'& label.Mui-focused': {
+			color: '#464E47',
+		},
+		'& .MuiOutlinedInput-root': {
+			'& fieldset': {
+				borderColor: '#464E47',
+			},
+			'&:hover fieldset': {
+				borderColor: '#96E6B3',
+			},
+			'&.Mui-focused fieldset': {
+				borderColor: '#96E6B3',
+			},
+		},
+	},
+})(TextField);
 function LogIn({ history }) {
-	const [id, setId] = useState(123);
-	const [pw, setPw] = useState(123);
+	const [id, setId] = useState();
+	const [pw, setPw] = useState();
 	const userLogin = useLoginUser();
 	const loginHandler = async () => {
 		const status = await userLogin(id, pw);
@@ -13,11 +32,28 @@ function LogIn({ history }) {
 			history.push('/challenge/ing');
 		} else {
 			alert('로그인 실패');
+			// alert(`${id} ${pw}`);
 		}
+	};
+	const idHandler = (e) => {
+		setId(e.target.value);
+	};
+	const pwHandler = (e) => {
+		setPw(e.target.value);
 	};
 	return (
 		<div className="login">
-			<LogInForm loginHandler={loginHandler} />
+			<div className="form">
+				<Grid>
+					<Box mt={2}>
+						<CssTextField variant="outlined" label="ID" placeholder="아이디를 입력하세요" value={id} onChange={idHandler} />
+					</Box>
+					<Box mt={2}>
+						<CssTextField variant="outlined" label="PW" type="password" placeholder="비밀번호를 입력하세요" value={pw} onChange={pwHandler} />
+					</Box>
+				</Grid>
+				<Button className="loginBtn" variant="contained" onClick={loginHandler}>LogIn</Button>
+			</div>
 			<div className="appendix">
 				<a className="text" href="/findpw">비밀번호가 기억이 안나십니까?</a>
 				<a className="text" href="/register">저희 사이트가 처음이시라구요?</a>

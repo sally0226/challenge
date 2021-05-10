@@ -1,6 +1,5 @@
 import React from 'react';
 import { TextField, Button, Box, Grid } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
 const CssTextField = withStyles({
