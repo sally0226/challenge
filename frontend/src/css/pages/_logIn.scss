@@ -8,7 +8,15 @@
         display: flex;
         justify-content: center;
         align-items: center;
-    
+        .MuiOutlinedInput-notchedOutline{
+            border-color: $green5;
+        }
+        .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+            border-color: $green3;
+        }
+        .MuiFormLabel-root.Mui-focused {
+            color:  $green5;
+          }
         .loginBtn{ 
             background-color: $green3 !important; 
             border-radius: 80% !important;
