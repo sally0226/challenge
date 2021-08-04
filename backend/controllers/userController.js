@@ -10,7 +10,6 @@ const { json } = require('body-parser');
 require("dotenv").config();
 const SecretKey = process.env.SECRET_KEY;
 
-
 function getCurrentDate() {
 	var date = new Date();
 	var year = date.getFullYear();
@@ -27,17 +26,17 @@ function getCurrentDate() {
 async function CreateUser(req, res, next) {
 	try {
 		console.log(req.body);
-		const { userId, userPw, userName, userEmail, gitId } = req.body;
+		const { user_id, user_pw, user_name, user_email, git_id } = req.body;
 		let today = getCurrentDate();
 		const in_date = today;
 		const last_update = today;
 
-		const user = await User.findOneByUsername(userId);
+		const user = await User.findOneByUsername(user_id);
 		if (user) {
 			console.log(user);
 			throw 'user exists';
 		} else {
-			await User.create(userId, userPw, userName, userEmail, gitId, in_date, last_update);
+			await User.create(user_id, user_pw, user_name, user_email, git_id, in_date, last_update);
 		}
 		res.status(201).json({ result: true });
 	} catch (err) {
@@ -48,7 +47,7 @@ async function CreateUser(req, res, next) {
 
 async function CheckIdDupl(req, res) { // id 중복체크용
 	try {
-		const input_id = req.params.userId;
+		const input_id = req.params.user_id;
 		console.log(input_id);
 		const result = await User.getUserById(input_id);
 		if (result) { // 중복 
