@@ -317,7 +317,7 @@ async function LogIn(req, res, next) {
 				git_id: user.git_id,
 			}
 				, SecretKey, {
-				expiresIn: '1h'
+				expiresIn: '30m'
 			}
 			);
 			res.cookie('user', token, { sameSite: 'none', secure: true });
