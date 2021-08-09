@@ -19,6 +19,7 @@ router.post('/logout', userController.logOut);
 router.post('/auth/jwtvalidcheck', userController.verifyToken);
 router.get('/user/uniqueid/:user_id', userController.checkIdDupl);
 router.patch('/user/changepw', userController.changePw);
+router.patch('/user/change', userController.change);
 router.get('/user/:user_id', userController.userInfomation);
 // userCon -->
 
@@ -58,15 +59,7 @@ router.post('/approve', approveController.createApprove);
 router.delete('/approve/:approve_id', approveController.deleteApprove);
 router.get('/approve/:approve_id', approveController.getApproveInfo);
 router.patch('/approve/:approve_id', approveController.confirmApprove);
-router.get('/approve/list/:ch_id', approveController.getApproveList);
-
-
-
-router.post('/approve', approveController.createApprove);
-router.delete('/approve/:approve_id', approveController.deleteApprove);
-router.get('/approve/:approve_id', approveController.getApproveInfo);
-router.patch('/approve/:approve_id', approveController.confirmApprove);
-router.get('/approve/list/:ch_id', approveController.getApproveList);
+router.get('/approve/list/:ch_id/:user_id', approveController.getApproveList);
 
 
 module.exports = router;

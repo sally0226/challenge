@@ -1,15 +1,15 @@
-
 const User = require('../models/userModel');
+const GitData = require('../models/gitDataModel');
 const jwt = require('jsonwebtoken');
 const Challenge = require('../models/challengeModel');
 const { ObjectID } = require('bson');
 const { find } = require('../models/userModel');
 const { json } = require('body-parser');
+const { CreateGitData } = require('../functions/crawling');
 
 
 require("dotenv").config();
 const SecretKey = process.env.SECRET_KEY;
-
 function getCurrentDate() {
 	var date = new Date();
 	var year = date.getFullYear();
@@ -37,6 +37,7 @@ async function CreateUser(req, res, next) {
 			throw 'user exists';
 		} else {
 			await User.create(user_id, user_pw, user_name, user_email, git_id, in_date, last_update);
+			await CreateGitData(user_id);
 		}
 		res.status(201).json({ result: true });
 	} catch (err) {
@@ -73,8 +74,6 @@ function DeleteUser(req, res) {
 
 	}
 
-
-
 	User.findOneAndDelete({ user_id: _id }, function (err, docs) {
 		if (err) {
 			console.log(err)
@@ -83,6 +82,11 @@ function DeleteUser(req, res) {
 			console.log("Deleted : ", docs);
 		}
 	});
+	
+	GitData.findOneAndDelete({ user_id: _id }, function (err,dos) {
+		if (err) { console.log(err) }
+		else { console.log("Deleted: ", docs); }
+	})
 	res.end('Delete')
 
 }
@@ -291,8 +295,8 @@ function OutChallenge(req, res) {
 }
 
 async function LogIn(req, res, next) {
-	const id = req.body.userId;
-	const pw = req.body.userPw;
+	const id = req.body.user_id;
+	const pw = req.body.user_pw;
 	console.log("id, pw :" + id + " " + pw);
 	// DB에서 user 정보 조회 
 	try {
@@ -315,6 +319,8 @@ async function LogIn(req, res, next) {
 			}
 			);
 			res.cookie('user', token, { sameSite: 'none', secure: true });
+			console.log('git data 교체 --------------------',id)
+			await CreateGitData(id);
 			res.status(201).json({
 				result: true
 			});
@@ -400,14 +406,36 @@ async function ChangePw(req, res) {
 }
 
 async function UserInfomation(req, res) {
-	try{
+	try {
 		const user_id = req.params.user_id;
 		const user = await User.findOneByUsername(user_id);
 
-		res.status(200).json({user_id: user.user_id, user_email: user.user_email, git_id: user.git_id});
+		res.status(200).json({ user_name: user.user_name, user_email: user.user_email, git_id: user.git_id });
+	} catch (err) {
+		console.log(err)
+		res.status(401).json({ error: 'erreor' })
+	}
+}
+
+async function Change(req, res) {
+	try{
+		const { user_id, name, git_id } = req.body;
+		User.findOneAndUpdate({ "user_id": user_id }, {
+			$set: {	
+				user_name: name.replace(/ /g,""),
+				git_id: git_id.replace(/ /g,"")
+			}
+		}, { new: true, useFindAndModify: false }, (err, doc) => {
+			if (err) {
+				throw new Error('user 정보 변경 실패')
+			}
+			else {
+				res.status(201).json({result: true})
+			}
+		})
 	}catch(err){
 		console.log(err)
-		res.status(401).json({error: 'erreor'})
+		res.status(401).json({error: 'error'})
 	}
 }
 
@@ -421,7 +449,8 @@ module.exports = {
 	outChallenge: OutChallenge,
 	checkIdDupl: CheckIdDupl,
 	changePw: ChangePw,
-	userInfomation: UserInfomation
+	userInfomation: UserInfomation,
+	change: Change
 };
 
 

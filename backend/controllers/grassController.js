@@ -99,7 +99,7 @@ async function GetCommitLists(users, challenge_id, year, month){
 async function GetOtherCommitLists(users, challenge_id, year, month){
 	const dateCounts = [new Date(year, month-2, 0).getDate(),new Date(year, month-1, 0).getDate(),new Date(year, month, 0).getDate()];
 	var dates = [];
-	var isCommitedList = []; 
+	var isCommitedList = [];
 	for(let i=0; i<users.length; i++){
 		// Approve 모델에서, 해당 유저, 해당 챌린지, 해당 년도,달에 대한 정보 긁어오기 
     	const result = await Approve.findByUserChallangeMonth(users[i], challenge_id, year, month);
